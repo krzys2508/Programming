@@ -1,0 +1,111 @@
+#include <iostream>
+#include <stdlib.h>
+#include <ctime>
+#include <string>
+#include <windows.h>
+using namespace std;
+
+const int MAKSYMALNA_ILOSC_PORAZEK = 14;
+
+void idzdoXY(int x, int y)
+{
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+void rysujszubienice(int indeks) {
+	const int X = 10;
+	const int Y = 7;
+	int pozycja[MAKSYMALNA_ILOSC_PORAZEK][2] = {
+	{Y,X},
+	{Y - 1,X},
+	{Y - 2,X},
+	{Y - 3,X},
+	{Y - 4,X},
+	{Y - 4,X + 1},
+	{Y - 4,X + 2},
+	{Y - 4,X + 3},
+	{Y - 3,X + 3},
+	{Y - 2,X + 3},
+	{Y - 2,X + 2},
+	{Y - 2,X + 4},
+	{Y - 1,X + 2},
+	{Y - 1,X + 4},
+	};
+	char elementwisielca[MAKSYMALNA_ILOSC_PORAZEK] = { char(202),char(186),char(186),char(186),char(201),char(205),char(205),char(187),'O',char(179),'-','-','/',char(92) };
+
+	idzdoXY(pozycja[indeks][1], pozycja[indeks][0]);
+	cout << elementwisielca[indeks];
+}
+
+
+int main() {
+	srand(time(NULL));
+
+	//setlocale(LC_ALL, "polish");
+	int licznikPorazek=0;
+	const int MAKSYMALNA_ILOSC_PROB=19; 
+	const int ILOSC_LITER_W_SLOWIE = 5;
+	string slowa[5];
+	slowa[0] = "szron";
+	slowa[1] = "worek";
+	slowa[2] = "muzyk";
+	slowa[3] = "krowa";
+	slowa[4] = "panna";
+	int z = rand() % 4;
+	idzdoXY(10, 0);
+	cout << "Witaj w grze w wisielca!!";
+	idzdoXY(10, 1);
+	cout << "Wybierz litere: ";
+
+
+	char litera;
+	string wybrane = slowa[z];
+
+	char odgadnietelitery[ILOSC_LITER_W_SLOWIE];
+	for (int b = 0; b < ILOSC_LITER_W_SLOWIE; b++) {
+		odgadnietelitery[b] = '-';
+	}
+	bool odgadnietoWyraz = false;
+	for (int licznikKrokow = 0; licznikKrokow < MAKSYMALNA_ILOSC_PROB; licznikKrokow++) {
+		idzdoXY(27, 1);
+		cin >> litera;
+		idzdoXY(0, 8 + licznikKrokow);
+		cout << licznikKrokow << ": " << litera;
+		size_t indeks = wybrane.find(litera);
+		if (indeks != string::npos) {
+			idzdoXY(10, 2);
+			odgadnietelitery[indeks] = litera;
+			indeks = wybrane.find(litera, indeks + 1);
+			if (indeks != string::npos) {
+				odgadnietelitery[indeks] = litera;
+			}
+
+			odgadnietoWyraz = true;
+			for (int b = 0; b < ILOSC_LITER_W_SLOWIE; b++) {
+				cout << odgadnietelitery[b];
+				if (odgadnietelitery[b] == '-') {
+					odgadnietoWyraz = false;
+				}
+			}
+			if (odgadnietoWyraz) {
+				idzdoXY(10, 2);
+				cout << "Wygrales, wylosowany wyraz to: "<<wybrane;
+				break;
+			}
+		}
+		else {
+			rysujszubienice(licznikPorazek);
+			licznikPorazek++;
+			if (licznikPorazek >= MAKSYMALNA_ILOSC_PORAZEK) {
+				idzdoXY(0,26);
+				cout << "Przegrales, wylosowany wyraz to: "<<wybrane;
+				break;
+			}
+		}
+	}
+	idzdoXY(0, 28);
+	return 0;
+}
